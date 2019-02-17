@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Where To Go!</string>
+
+    <string name="google_maps_API_key">AIzaSyCXfCAy3ZWcFpXGAOhFa0EWM_k6eFwXK8k</string>
+</resources>
