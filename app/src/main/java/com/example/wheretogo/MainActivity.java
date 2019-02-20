@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.wheretogo.WeatherMap;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -33,6 +34,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+    public void getWeather(double latitude,double longitude ){
+        double lat=latitude;
+        double lon=longitude;
+        WeatherMap obj=new WeatherMap();
+        obj.execute("api.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat) + "&appid=5fd2eb6d64688fd32b0bde7ecf10ab65&lon="+ String.valueOf(lon) + "");
+
+
+
     }
 
     private void init(){
