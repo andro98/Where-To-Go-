@@ -29,6 +29,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -48,17 +49,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     //Widgets
     private EditText SearchText;
+    private ImageView Gps;
+    private ImageView Info;
 
     //Variables
     private Boolean LocationPermissionGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         SearchText = findViewById(R.id.search_input);
+        Gps = findViewById(R.id.ic_gps);
+        Info = findViewById(R.id.ic_info);
 
         getLocationPermission();
 
@@ -83,10 +89,32 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+        Gps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDeviceLocation();
+            }
+        });
+
+        Info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    if(marker.isInfoWindowShown()){
+                        marker.hideInfoWindow();
+                    }else{
+                        marker.showInfoWindow();
+                    }
+                }catch (NullPointerException e){
+                    Log.e(TAG, "onClickL NullPointerException: " + e.getMessage());
+                }
+            }
+        });
+
+        HideSoftKeyboard();
     }
 
     private void geoLocate(){
-
         Log.d(TAG, "geoLocate: geolocating");
 
         String searchString = SearchText.getText().toString();
@@ -105,6 +133,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
             //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
 
+            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), ZOOM, address);
         }
     }
 
@@ -120,8 +149,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         if (task.isSuccessful()) {
                             Location currentLoaction = (Location) task.getResult();
 
-                            moveCamera(new LatLng(currentLoaction.getLatitude(), currentLoaction.getLongitude()), ZOOM);
-
+                            try{
+                                Geocoder geocoder = new Geocoder(MapActivity.this);
+                                Address address = geocoder.getFromLocation(currentLoaction.getLatitude()
+                                    , currentLoaction.getLongitude()
+                                    ,1).get(0);
+                                 moveCamera(new LatLng(currentLoaction.getLatitude(), currentLoaction.getLongitude()), ZOOM, address);
+                            }catch (IOException e){
+                                Log.e(TAG, "IOException: " + e.getMessage());
+                            }
                         } else {
                             Toast.makeText(MapActivity.this, "unable to find current location", Toast.LENGTH_SHORT).show();
                         }
@@ -133,8 +169,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom) {
+    private void moveCamera(LatLng latLng, float zoom, Address address)
+    {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        mMap.clear();
+
+        mMap.setInfoWindowAdapter(new CustomInfoAdapter(MapActivity.this));
+
+        if(address != null){
+            try {
+                String snippet = "Address: " + address.getAddressLine(0) + "\n";
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .title(address.getAddressLine(0))
+                        .snippet(snippet);
+
+                marker = mMap.addMarker(options);
+            }catch (NullPointerException e){
+                Log.e(TAG, "MarkerInfo: NullPointerException: " + e.getMessage());
+            }
+         }
+        else{
+            mMap.addMarker(new MarkerOptions().position(latLng));
+        }
+        HideSoftKeyboard();
+    }
+
+    private void moveCamera(LatLng latLng, float zoom, String title) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        mMap.clear();
+
+        MarkerOptions options = new MarkerOptions()
+                .position(latLng)
+                .title(title);
+        mMap.addMarker(options);
+        HideSoftKeyboard();
     }
 
     private void initMap() {
@@ -201,5 +272,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
             init();
         }
+    }
+
+    private void HideSoftKeyboard(){
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 }
