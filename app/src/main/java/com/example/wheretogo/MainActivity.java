@@ -39,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
         double lat=latitude;
         double lon=longitude;
         WeatherMap obj=new WeatherMap();
-        obj.execute("api.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat) + "&appid=5fd2eb6d64688fd32b0bde7ecf10ab65&lon="+ String.valueOf(lon) + "");
-
+        obj.execute("api.openweathermap.org/data/2.5/weather?lat=" + Double.toString(lat)  + "&appid=5fd2eb6d64688fd32b0bde7ecf10ab65&lon="+ Double.toString(lon) + "");
 
 
     }
