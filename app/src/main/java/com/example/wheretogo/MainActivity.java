@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         if(isServicesOK()){
             Button  BtnMap = findViewById(R.id.btnMap);
             BtnMap.setOnClickListener(new View.OnClickListener() {

@@ -202,8 +202,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             try {
                 String snippet = "Address: " + address.getAddressLine(0) + "\n";
 
-               // getNews(address.getCountryCode());
-    getweather(address.getLatitude(),address.getLongitude());
+                getweather(address.getLatitude(),address.getLongitude());
+
+                getNews(address.getCountryCode());
+
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
                         .title(address.getAddressLine(0))
@@ -220,9 +222,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         HideSoftKeyboard();
     }
 
-   /* private void getNews(String article){
+   private void getNews(String article){
         NewsMap newsMap = new NewsMap(this, customInfoAdapter.getmNews(),customInfoAdapter.getmNewsTitle(),article);
-    }*/
+    }
 
     /*private void moveCamera(LatLng latLng, float zoom, String title) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
