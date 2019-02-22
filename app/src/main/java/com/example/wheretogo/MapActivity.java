@@ -197,7 +197,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if(address != null){
             try {
                 String snippet = "Address: " + address.getAddressLine(0) + "\n";
+
                // getNews(address.getCountryCode());
+
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
                         .title(address.getAddressLine(0))
@@ -207,7 +209,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }catch (NullPointerException e){
                 Log.e(TAG, "MarkerInfo: NullPointerException: " + e.getMessage());
             }
-         }
+        }
         else{
             mMap.addMarker(new MarkerOptions().position(latLng));
         }
