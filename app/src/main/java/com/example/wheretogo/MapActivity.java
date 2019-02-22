@@ -46,6 +46,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int REQUEST_CODE = 1234;
     private static final float ZOOM = 50;
+    private CustomInfoAdapter customInfoAdapter;
 
     //Widgets
     private EditText SearchText;
@@ -62,10 +63,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        //Initialize widgets
         SearchText = findViewById(R.id.search_input);
         Gps = findViewById(R.id.ic_gps);
         Info = findViewById(R.id.ic_info);
+        // Object from class that custom the card that pop up on marker
+        customInfoAdapter = new CustomInfoAdapter(this);
 
+        //check for permission for location
         getLocationPermission();
 
 
@@ -115,6 +120,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void geoLocate(){
+        //This function return the location from the search text
         Log.d(TAG, "geoLocate: geolocating");
 
         String searchString = SearchText.getText().toString();
@@ -131,29 +137,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Address address = list.get(0);
 
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
-            //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
 
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), ZOOM, address);
         }
     }
 
+    // this function get my device location
     private void getDeviceLocation() {
+
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         try {
             if (LocationPermissionGranted) {
+                // if location is granted
+                // then create a task to get last location of my device
                 Task location = mFusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task task) {
                         if (task.isSuccessful()) {
+                            // on complete and successful
+                            // get current location
                             Location currentLoaction = (Location) task.getResult();
 
                             try{
+                                // create a geocoder object
                                 Geocoder geocoder = new Geocoder(MapActivity.this);
+                                // get address of my location using GeoCoder
                                 Address address = geocoder.getFromLocation(currentLoaction.getLatitude()
                                     , currentLoaction.getLongitude()
                                     ,1).get(0);
+                                // then move the camera to this location
                                  moveCamera(new LatLng(currentLoaction.getLatitude(), currentLoaction.getLongitude()), ZOOM, address);
                             }catch (IOException e){
                                 Log.e(TAG, "IOException: " + e.getMessage());
@@ -171,15 +185,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void moveCamera(LatLng latLng, float zoom, Address address)
     {
+        //this function move the camera to the location passed
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
+        // remove all dots from map
         mMap.clear();
-
-        mMap.setInfoWindowAdapter(new CustomInfoAdapter(MapActivity.this));
+        //setting info adapter to my custom adapter
+        mMap.setInfoWindowAdapter(customInfoAdapter);
 
         if(address != null){
             try {
                 String snippet = "Address: " + address.getAddressLine(0) + "\n";
+               // getNews(address.getCountryCode());
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
                         .title(address.getAddressLine(0))
@@ -196,7 +214,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         HideSoftKeyboard();
     }
 
-    private void moveCamera(LatLng latLng, float zoom, String title) {
+   /* private void getNews(String article){
+        NewsMap newsMap = new NewsMap(this, customInfoAdapter.getmNews(),customInfoAdapter.getmNewsTitle(),article);
+    }*/
+
+    /*private void moveCamera(LatLng latLng, float zoom, String title) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
         mMap.clear();
@@ -206,14 +228,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .title(title);
         mMap.addMarker(options);
         HideSoftKeyboard();
-    }
+    }*/
 
     private void initMap() {
+        //initialize map fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        // After finishing will call on map ready
         mapFragment.getMapAsync(MapActivity.this);
     }
 
     private void getLocationPermission() {
+        // Array of permissions
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
@@ -222,6 +247,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 LocationPermissionGranted = true;
+                // if all permissions is granted then initialize map
                 initMap();
             } else {
                 ActivityCompat.requestPermissions(this,
@@ -255,26 +281,32 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
 
+    //This function is called after init->getMapAsnyc
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         if (LocationPermissionGranted) {
+            // if location permission is granted
+            //get device location
             getDeviceLocation();
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED  && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
+                //if no permission return
                 return;
             }
             //put little dot on my location
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            // initialize controls
             init();
         }
     }
 
     private void HideSoftKeyboard(){
+        // hide keyboard
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 }
