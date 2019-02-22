@@ -11,6 +11,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+
+
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -24,6 +26,9 @@ import java.net.URL;
 
 ///////
 public class WeatherMap extends AsyncTask<String,Void,String> {
+
+
+
     String result = "";
     URL url;
     HttpURLConnection urlConnection =null;
@@ -61,7 +66,7 @@ public class WeatherMap extends AsyncTask<String,Void,String> {
             JSONObject jsonObject=new JSONObject(result);
             JSONObject weatherdata=new JSONObject(jsonObject.getString("main"));
             //from json mainn every thing between {}
-            Double tempreture =Double.parseDouble(weatherdata.getString("temo"));
+            Double tempreture =Double.parseDouble(weatherdata.getString("temp"));
             // bigeeb al temp mn al weather data b3d ma 7t kol 2le fe al main fe al weather w b3d kada bi5od al temp lo7do
             int temperatureint =(int)(tempreture*1.8-459.67);
             String placename=jsonObject.getString("name");

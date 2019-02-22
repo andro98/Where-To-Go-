@@ -118,7 +118,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         HideSoftKeyboard();
     }
+    private void getweather(double lat,double lon){
+        newweather obj=new newweather(this,customInfoAdapter.getmWeather(),String.valueOf(lat),String.valueOf(lon));
 
+
+    }
     private void geoLocate(){
         //This function return the location from the search text
         Log.d(TAG, "geoLocate: geolocating");
@@ -197,6 +201,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if(address != null){
             try {
                 String snippet = "Address: " + address.getAddressLine(0) + "\n";
+
+                getweather(address.getLatitude(),address.getLongitude());
 
                 getNews(address.getCountryCode());
 
