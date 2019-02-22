@@ -53,6 +53,7 @@ public class CustomInfoAdapter implements GoogleMap.InfoWindowAdapter{
     }
 
     public TextView getmNews() {
+
         return mNews;
     }
 
