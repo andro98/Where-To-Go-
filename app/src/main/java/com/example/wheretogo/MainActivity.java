@@ -12,8 +12,10 @@ import android.widget.Toast;
 import com.example.wheretogo.WeatherMap;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth;
 
     private static final String TAG = "MainActivity";
 
@@ -23,7 +25,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mAuth = FirebaseAuth.getInstance();
+        if(!isLogged()){
+            openLogin();
+        }
 
         if(isServicesOK()){
             Button  BtnMap = findViewById(R.id.btnMap);
@@ -36,17 +41,14 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-    public void getWeather(double latitude,double longitude ){
-        double lat=latitude;
-        double lon=longitude;
-        WeatherMap obj=new WeatherMap();
-        obj.execute("api.openweathermap.org/data/2.5/weather?lat=" + Double.toString(lat)  + "&appid=5fd2eb6d64688fd32b0bde7ecf10ab65&lon="+ Double.toString(lon) + "");
 
-
+    private void openLogin(){
+        startActivity(new Intent(this, Login.class));
+        finish();
     }
 
-    private void init(){
-
+    private Boolean isLogged(){
+        return (mAuth.getCurrentUser() != null);
     }
 
     public boolean isServicesOK(){

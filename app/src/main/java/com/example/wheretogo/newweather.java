@@ -29,7 +29,7 @@ public class newweather {
         mQueue = Volley.newRequestQueue(context);
         this.mWeather = mWeather;
 
-        url = "api.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat)  + "&appid=5fd2eb6d64688fd32b0bde7ecf10ab65&lon="+ String.valueOf(lon) + "";
+        url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat +"&lon="+ lon+"&appid=5fd2eb6d64688fd32b0bde7ecf10ab65";
         jsonParse();
     }
 
@@ -40,14 +40,12 @@ public class newweather {
                     @Override
                     public void onResponse (JSONObject response) {
                         try{
-                            JSONArray jsonArray = response.getJSONArray("main");
-                            JSONObject weather = jsonArray.getJSONObject(0);
-                            //from json mainn every thing between {}
-                            Double tempreture =Double.parseDouble(weather.getString("temp"));
-                            // bigeeb al temp mn al weather data b3d ma 7t kol 2le fe al main fe al weather w b3d kada bi5od al temp lo7do
-                            int temperatureint =(int)(tempreture*1.8-459.67);
+                            JSONObject main_object = response.getJSONObject("main");
+                            String temp = String.valueOf(main_object.getDouble("temp"));
+                            double temp_int = Double.parseDouble(temp);
+                            int temperatureint =(int)((temp_int - 32) /1.8000);
 
-                            mWeather.setText(temperatureint);
+                            mWeather.setText(String.valueOf(temperatureint));
 
                         }catch (JSONException e) {
                             e.printStackTrace();
@@ -56,7 +54,6 @@ public class newweather {
                     }, new Response.ErrorListener(){
                         public void onErrorResponse(VolleyError error){
                             error.printStackTrace();
-
                         }
                     }
                 );
