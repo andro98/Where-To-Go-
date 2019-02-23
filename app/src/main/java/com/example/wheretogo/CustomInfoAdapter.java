@@ -37,7 +37,6 @@ public class CustomInfoAdapter implements GoogleMap.InfoWindowAdapter{
             tvTitle.setText(title);
         }
 
-
     }
 
     @Override
@@ -52,10 +51,7 @@ public class CustomInfoAdapter implements GoogleMap.InfoWindowAdapter{
         return Window;
     }
 
-    public TextView getmNews() {
-
-        return mNews;
-    }
+    public TextView getmNews() {return mNews; }
 
     public TextView getmNewsTitle() {
         return mNewsTitle;
