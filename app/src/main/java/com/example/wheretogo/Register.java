@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,9 +16,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class Login extends AppCompatActivity {
+public class Register extends AppCompatActivity {
 
-    private static final String TAG = "Login";
+    private static final String TAG = "Register";
     private FirebaseAuth mAuth;
 
     // Widgets
@@ -32,15 +31,14 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
         mAuth = FirebaseAuth.getInstance();
 
-        mEmail = findViewById(R.id.mEmail);
-        mPassword = findViewById(R.id.mPSW);
-        mLogIn = findViewById(R.id.loginBtn);
-        mReg = findViewById(R.id.regBtn);
-        mProg = findViewById(R.id.Prog_login);
-
+        mEmail = findViewById(R.id.mEmail_reg);
+        mPassword = findViewById(R.id.mPSW_reg);
+        mLogIn = findViewById(R.id.logBtn_reg);
+        mReg = findViewById(R.id.regBtn_reg);
+        mProg = findViewById(R.id.Prog_register);
         init();
     }
 
@@ -50,14 +48,14 @@ public class Login extends AppCompatActivity {
         mLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logIn();
+                openLogin();
             }
         });
 
         mReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openRegister();
+                register();
             }
         });
     }
@@ -66,11 +64,11 @@ public class Login extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if(isLogged()){
-            openMain();
+            openLogin();
         }
     }
 
-    private void logIn()
+    private void register()
     {
         mProg.setVisibility(View.VISIBLE);
         final String Email = mEmail.getText().toString();
@@ -80,7 +78,7 @@ public class Login extends AppCompatActivity {
             Toast.makeText(this, "Please Enter sth", Toast.LENGTH_SHORT).show();
             mProg.setVisibility(View.INVISIBLE);
         }else{
-            mAuth.signInWithEmailAndPassword(Email, Psw).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            mAuth.createUserWithEmailAndPassword(Email, Psw).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
@@ -88,7 +86,7 @@ public class Login extends AppCompatActivity {
                         openMain();
                         mProg.setVisibility(View.INVISIBLE);
                     }else{
-                        Toast.makeText(Login.this, "Please try again", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Register.this, "Please try again", Toast.LENGTH_SHORT).show();
                         mProg.setVisibility(View.INVISIBLE);
                     }
                 }
@@ -101,15 +99,13 @@ public class Login extends AppCompatActivity {
     }
 
     private void openMain(){
-        Intent intent = new Intent(Login.this, MainActivity.class);
+        Intent intent = new Intent(Register.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
-    private void openRegister(){
-
-        Intent intent = new Intent(Login.this, Register.class);
-
+    private void openLogin(){
+        Intent intent = new Intent(Register.this, Login.class);
         startActivity(intent);
         finish();
     }
