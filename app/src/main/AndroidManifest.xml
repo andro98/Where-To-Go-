@@ -14,8 +14,10 @@
         android:roundIcon="@mipmap/ic_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".Register"></activity>
         <activity android:name=".Login" />
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
