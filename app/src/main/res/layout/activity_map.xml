@@ -68,5 +68,16 @@
         android:id="@+id/ic_info"
         android:src="@drawable/ic_info"/>
 
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/ic_info"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerCrop"
+        android:id="@+id/ic_save"
+        android:src="@drawable/ic_save"/>
+
 
 </RelativeLayout>

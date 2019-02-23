@@ -33,10 +33,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -52,6 +56,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private EditText SearchText;
     private ImageView Gps;
     private ImageView Info;
+    private ImageView Save;
 
     //Variables
     private Boolean LocationPermissionGranted = false;
@@ -67,6 +72,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SearchText = findViewById(R.id.search_input);
         Gps = findViewById(R.id.ic_gps);
         Info = findViewById(R.id.ic_info);
+        Save = findViewById(R.id.ic_save);
         // Object from class that custom the card that pop up on marker
         customInfoAdapter = new CustomInfoAdapter(this);
 
@@ -101,6 +107,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+        Save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveCard();
+            }
+        });
+
         Info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,6 +131,31 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         HideSoftKeyboard();
     }
+
+    private void saveCard(){
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+        Map<String, String> mMap = new HashMap<>();
+        mMap.put("Address", customInfoAdapter.getmTitle().getText().toString());
+        mMap.put("temp", customInfoAdapter.getmWeather().getText().toString());
+        mMap.put("title", customInfoAdapter.getmNewsTitle().getText().toString());
+        mMap.put("news", customInfoAdapter.getmNews().getText().toString());
+
+        firebaseFirestore.collection(mAuth.getCurrentUser().getUid()).document().set(mMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(MapActivity.this, "data saved", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(MapActivity.this, "error just happend", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
     private void getweather(double lat,double lon){
         newweather obj=new newweather(this,customInfoAdapter.getmWeather(),String.valueOf((int)lat),String.valueOf((int)lon));
 
