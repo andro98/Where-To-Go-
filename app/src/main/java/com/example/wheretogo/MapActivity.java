@@ -119,7 +119,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         HideSoftKeyboard();
     }
     private void getweather(double lat,double lon){
-        newweather obj=new newweather(this,customInfoAdapter.getmWeather(),String.valueOf(lat),String.valueOf(lon));
+        newweather obj=new newweather(this,customInfoAdapter.getmWeather(),String.valueOf((int)lat),String.valueOf((int)lon));
 
 
     }
